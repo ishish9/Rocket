@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80569eb07c254134fbb41ce1bdc266b6, type: 3}
+  m_Name: ScriptableAudioClips
+  m_EditorClassIdentifier: 
+  MainMusic: {fileID: 0}
+  Booster: {fileID: 0}
+  Thruster1: {fileID: 0}
+  Thruster2: {fileID: 0}
+  FuelCollect: {fileID: 8300000, guid: 460b828b82838a643891b009bdfda245, type: 3}
+  GameOver: {fileID: 0}
+  RespawnSound: {fileID: 0}
+  UIClick: {fileID: 0}

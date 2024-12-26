@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Rocket_Controls : MonoBehaviour
 {
+    InputSystem_Actions inputMap;
     [SerializeField] private GameObject boosterMain;
     [SerializeField] private GameObject booster1;
     [SerializeField] private GameObject booster2;
@@ -17,25 +19,53 @@ public class Rocket_Controls : MonoBehaviour
     [SerializeField] private GameObject ThrusterOFF1;
     [SerializeField] private GameObject ThrusterOFF2;
     [SerializeField] private GameObject ThrusterOFF3;
+    private Vector2 move;
+    public delegate void fuelLevel();
+    public static event fuelLevel OnFuel;
 
     public float speed;
     public float acceleration = 1.0f;
     private float LeftRightSpeed = 15f;
-    private float maxlow = 0;
-    private float maxhigh = 300;
-    private bool buttonlaunch = false;
-    private Rigidbody r;
+    private float miniSpeed = 0;
+    private float maxSpeed = 300;
+    private Rigidbody rigidBody;
     public FuelBar fuel;
+    private bool buttonlaunch = false;
     private bool isDead = false;
- 
+
+    private void Awake()
+    {
+        inputMap = new InputSystem_Actions();
+       // inputMap.Player.Thrust.performed += OnThrustEnable;
+        inputMap.Player.Jump.performed += OnMoveRocket;
+
+    }
+
     void Start()
     {
-        r = gameObject.GetComponent<Rigidbody>();
+        rigidBody = gameObject.GetComponent<Rigidbody>();
+    }
+
+    private void OnEnable()
+    {
+        inputMap.Player.Enable();
+
+    }
+
+    private void OnDisable()
+    {
+        inputMap.Player.Disable();
+
+    }
+
+    private void Update()
+    {
+        move = inputMap.Player.Move.ReadValue<Vector2>();
     }
 
     void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.Space) || buttonlaunch == true)
+        if (inputMap.Player.Thrust.triggered == true|| buttonlaunch == true)
         {
             if (isDead == false)
             {
@@ -48,13 +78,13 @@ public class Rocket_Controls : MonoBehaviour
             booster3.SetActive(true);
             booster4.SetActive(true);
             boostersnd.SetActive(true);
-            r.AddForce(Vector3.up * speed);
+            rigidBody.AddForce(Vector3.up * speed);
             speed += acceleration;
             fuel.slidervalue -= Time.deltaTime;
             fuel.SetFuelLevel(fuel.slidervalue);
-            if (speed >= maxhigh)
+            if (speed >= maxSpeed)
             {
-                speed = maxhigh;
+                speed = maxSpeed;
             }
 
             if (fuel.slidervalue <= 0)
@@ -75,9 +105,9 @@ public class Rocket_Controls : MonoBehaviour
                 booster4.SetActive(false);
                 boostersnd.SetActive(false);
                 speed -= acceleration;
-                if (speed <= maxlow)
+                if (speed <= miniSpeed)
                 {
-                    speed = maxlow;
+                    speed = miniSpeed;
                 }
             }
         }
@@ -93,16 +123,16 @@ public class Rocket_Controls : MonoBehaviour
             booster4.SetActive(false);
             boostersnd.SetActive(false);
             speed -= acceleration;
-            if (speed <= maxlow)
+            if (speed <= miniSpeed)
             {
-                speed = maxlow;
+                speed = miniSpeed;
             }
               
         }
         /////Left Right Controls
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            r.AddForce(-LeftRightSpeed, 0, 0, ForceMode.Force);
+            rigidBody.AddForce(-LeftRightSpeed, 0, 0, ForceMode.Force);
             ThrusterR.SetActive(true);
             Thrustersnd1.SetActive(true);
         }
@@ -114,7 +144,7 @@ public class Rocket_Controls : MonoBehaviour
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            r.AddForce( LeftRightSpeed, 0, 0, ForceMode.Force);
+            rigidBody.AddForce( LeftRightSpeed, 0, 0, ForceMode.Force);
             ThrusterL.SetActive(true);
             Thrustersnd2.SetActive(true);
         }
@@ -125,6 +155,36 @@ public class Rocket_Controls : MonoBehaviour
         }
     }
 
+    
+
+    public void OnMoveRocket(InputAction.CallbackContext contex)
+    {
+                /////Left Right Controls
+                if (Input.GetKey(KeyCode.LeftArrow))
+                {
+                    rigidBody.AddForce(-LeftRightSpeed, 0, 0, ForceMode.Force);
+                    ThrusterR.SetActive(true);
+                    Thrustersnd1.SetActive(true);
+                }
+                else
+                {
+                    ThrusterR.SetActive(false);
+                    Thrustersnd1.SetActive(false);
+                }
+
+                if (Input.GetKey(KeyCode.RightArrow))
+                {
+                    rigidBody.AddForce(LeftRightSpeed, 0, 0, ForceMode.Force);
+                    ThrusterL.SetActive(true);
+                    Thrustersnd2.SetActive(true);
+                }
+                else
+                {
+                    ThrusterL.SetActive(false);
+                    Thrustersnd2.SetActive(false);
+                }
+            }
+
     public void thruston()
     {
         buttonlaunch = true;
@@ -133,5 +193,10 @@ public class Rocket_Controls : MonoBehaviour
     public void thrustoff()
     {
         buttonlaunch = false;
+    }
+
+    public void thrustToggle()
+    {
+        buttonlaunch = !buttonlaunch;
     }
 }

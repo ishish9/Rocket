@@ -1,20 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FuelUpContainer : MonoBehaviour
 {
-    [SerializeField] private AudioSource fuelCollectSound;
+    [SerializeField] private int fuelAmount;
     [SerializeField] private ParticleSystem FuelCollectedEffect;
-    [SerializeField] private Transform FuelCollectedEffectPosition;
-    [SerializeField] private FuelBar script;
+    public delegate void FuelUp (float fuelAmount);
+    public static event FuelUp OnFuelup;
 
     private void OnTriggerEnter()
     {
-        fuelCollectSound.Play();
-        gameObject.SetActive(false);
-        FuelCollectedEffectPosition.position = transform.position;
+        AudioManager.instance.PlaySound(AudioManager.instance.audioClips.FuelCollect);      
+        FuelCollectedEffect.transform.position = transform.position;
         FuelCollectedEffect.Play();
-        script.slidervalue += 5f;
+        OnFuelup(fuelAmount);
+        gameObject.SetActive(false);
     }
 }

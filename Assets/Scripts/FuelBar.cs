@@ -5,18 +5,35 @@ using UnityEngine.UI;
 
 public class FuelBar : MonoBehaviour
 {
-    public Slider slider;
+    private Slider slider;
     public float slidervalue;
-    private float fuelLVL = 30f;
+    private float fuelLVL = 100f;
 
     void Start()
     {
-        slider.maxValue = fuelLVL;
-        SetFuelLevel(fuelLVL);
+        slider = GetComponent<Slider>();
+        //slider.maxValue = fuelLVL;
+        //SetFuelLevel(fuelLVL);
     }
 
-    public void SetFuelLevel(float slidervalue)
+    private void OnEnable()
+    {
+        FuelUpContainer.OnFuelup += AddFuel;
+    }
+
+    private void OnDisable()
+    {
+        FuelUpContainer.OnFuelup -= AddFuel;
+    }
+
+     public void SetFuelLevel(float slidervalue)
     {
         slider.value = slidervalue;
     }
+
+    public void AddFuel(float newValue)
+    {
+        slider.value += slidervalue + newValue;
+    }
+
 }
